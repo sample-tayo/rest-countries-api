@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Card from "./card/Card";
+import Filter from "./filter/Filter";
+import SearchBox from "./search/Search";
 
 export default function Datamap() {
   const [data, setData] = useState([]);
+  const [originalData, setOriginalData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  /* The `useEffect` hook in React is used to perform side effects in functional components. In this
-  case, the `useEffect` hook is being used to fetch data from a JSON file (`/data.json`) and update
-  the state (`data`) with the fetched data. */
-  useEffect(function () {
+  useEffect(() => {
     async function fetchCountries() {
       try {
         setIsLoading(true);
@@ -18,9 +18,9 @@ export default function Datamap() {
         if (!res.ok) throw new Error("Your network no good");
 
         const result = await res.json();
-        setData(result.countries || []);
-        console.log(result.countries);
-        // setData(result.countries);
+        const countries = result.countries || [];
+        setData(countries);
+        setOriginalData(countries);
       } catch (err) {
         console.error(err.message);
         setError(err.message);
@@ -31,19 +31,31 @@ export default function Datamap() {
     fetchCountries();
   }, []);
 
-  return (
-    <div className="data-map">
-      {/* {isLoading ? (
-        <Loader />
-      ) : (
-        data.map((country) => <Card key={country.name} country={country} />)
-      )} */}
+  const handleSort = (region) => {
+    if (region) {
+      const filteredData = originalData.filter(
+        (country) => country.region === region
+      );
+      setData(filteredData);
+    } else {
+      // Reset to original data when "All" is selected
+      setData(originalData);
+    }
+  };
 
-      {isLoading && <Loader />}
-      {!isLoading &&
-        !error &&
-        data.map((country) => <Card key={country.name} country={country} />)}
-      {error && <ErrorMessage message={error} />}
+  return (
+    <div className="data-map-container">
+      <section>
+        <SearchBox />
+        <Filter countries={data} onSort={handleSort} />
+      </section>
+      <div className="data-map">
+        {isLoading && <Loader />}
+        {!isLoading &&
+          !error &&
+          data.map((country) => <Card key={country.name} country={country} />)}
+        {error && <ErrorMessage message={error} />}
+      </div>
     </div>
   );
 }
