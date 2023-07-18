@@ -1,0 +1,32 @@
+/* --------------------navbar----------------------- */
+.Navbar {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  justify-content: space-between;
+  padding: 2rem 3rem;
+  font-size: 2rem;
+  align-items: center;
+  background-color: var(--DarkBlue);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.Navbar p {
+  font-size: 1.5rem;
+  color: var(--White);
+}
+
+.toggle {
+  cursor: pointer;
+}
+
+.Navbar div {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  align-items: center;
+}
+
+.Navbar p:last-child {
+  font-size: 1.5rem;
+}
