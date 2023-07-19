@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Card from "./card/Card";
+// import Card from "./card/Card";
 import Filter from "./filter/Filter";
 import SearchBox from "./search/Search";
+import DisplaySelectedCountry from "./selectedCountry/DisplaySelectedCountry";
+import CountryList from "./CountryList";
 // import { FaSearch } from "react-icons/fa";
 
 export default function Datamap() {
@@ -10,21 +12,33 @@ export default function Datamap() {
   const [originalData, setOriginalData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState(null);
+
+  const handleSelectedCountry = (countryName) => {
+    const selectedCountry = data.find(
+      (country) => country.name === countryName
+    );
+    setSelectedCountry(selectedCountry);
+  };
+
+  function handleBackButton() {
+    setSelectedCountry(null);
+  }
 
   useEffect(() => {
     async function fetchCountries() {
       try {
         setIsLoading(true);
         const res = await fetch(`/data.json`);
-
         if (!res.ok) throw new Error("Your network no good");
 
         const result = await res.json();
+
         const countries = result.countries || [];
-        // const searchResults = countries.searchInput;
-        // setData(searchResults);
         setData(countries);
         setOriginalData(countries);
+
+        console.log(countries);
       } catch (err) {
         console.error(err.message);
         setError(err.message);
@@ -61,23 +75,35 @@ export default function Datamap() {
   };
 
   return (
-    <div className="data-map-container">
-      <section>
-        <SearchBox
-          searchInput={searchInput}
-          setSearchInput={setSearchInput}
-          onSearch={handleSearch}
+    <>
+      {selectedCountry ? (
+        <DisplaySelectedCountry
+          country={selectedCountry}
+          handleBackButton={handleBackButton}
         />
-        <Filter countries={data} onSort={handleSort} />
-      </section>
-      <div className="data-map">
-        {isLoading && <Loader />}
-        {!isLoading &&
-          !error &&
-          data.map((country) => <Card key={country.name} country={country} />)}
-        {error && <ErrorMessage message={error} />}
-      </div>
-    </div>
+      ) : (
+        <div className="data-map-container">
+          <section>
+            <SearchBox
+              searchInput={searchInput}
+              setSearchInput={setSearchInput}
+              onSearch={handleSearch}
+            />
+            <Filter countries={data} onSort={handleSort} />
+          </section>
+          <div className="data-map">
+            {isLoading && <Loader />}
+            {!isLoading && !error && (
+              <CountryList
+                countries={data}
+                onSelectCountry={handleSelectedCountry}
+              />
+            )}
+            {error && <ErrorMessage message={error} />}
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 

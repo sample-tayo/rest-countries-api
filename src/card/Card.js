@@ -1,9 +1,9 @@
 import React from "react";
 import "./Card.css";
 
-export default function Card({ country }) {
+export default function Card({ country, onSelectCountry }) {
   return (
-    <div className="card">
+    <div className="card" onClick={() => onSelectCountry(country.name)}>
       <img src={country.flags.svg} alt={country.name} />
 
       <div className="card-content">
