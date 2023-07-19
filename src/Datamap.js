@@ -2,8 +2,10 @@ import React, { useState, useEffect } from "react";
 import Card from "./card/Card";
 import Filter from "./filter/Filter";
 import SearchBox from "./search/Search";
+// import { FaSearch } from "react-icons/fa";
 
 export default function Datamap() {
+  const [searchInput, setSearchInput] = useState("");
   const [data, setData] = useState([]);
   const [originalData, setOriginalData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -19,6 +21,8 @@ export default function Datamap() {
 
         const result = await res.json();
         const countries = result.countries || [];
+        // const searchResults = countries.searchInput;
+        // setData(searchResults);
         setData(countries);
         setOriginalData(countries);
       } catch (err) {
@@ -38,7 +42,20 @@ export default function Datamap() {
       );
       setData(filteredData);
     } else {
-      // Reset to original data when "All" is selected
+      // Reset to original data when All is selected "oti sumi"
+      setData(originalData);
+    }
+  };
+
+  const handleSearch = (searchQuery) => {
+    // just expeerimenting minimun characters for the search query
+    if (searchQuery.length >= 2) {
+      const filteredData = originalData.filter((country) =>
+        country.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setData(filteredData);
+    } else {
+      // If the search query length is less than 2, reset the data to the original data
       setData(originalData);
     }
   };
@@ -46,7 +63,11 @@ export default function Datamap() {
   return (
     <div className="data-map-container">
       <section>
-        <SearchBox />
+        <SearchBox
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+          onSearch={handleSearch}
+        />
         <Filter countries={data} onSort={handleSort} />
       </section>
       <div className="data-map">

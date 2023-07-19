@@ -1,9 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import "./Search.css";
 import { FaSearch } from "react-icons/fa";
 
-export default function SearchBox() {
-  const [input, setInput] = useState("");
+export default function SearchBox({ searchInput, setSearchInput, onSearch }) {
+  const handleSearchInput = (event) => {
+    setSearchInput(event.target.value);
+    onSearch(event.target.value);
+    console.log("ello");
+  };
+
   return (
     <div className="search-box">
       <button className="btn-search">
@@ -13,8 +18,8 @@ export default function SearchBox() {
         type="text"
         className="input-search"
         placeholder="Type to Search..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
+        value={searchInput}
+        onChange={handleSearchInput}
       />
     </div>
   );
